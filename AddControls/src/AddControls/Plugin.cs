@@ -14,6 +14,7 @@ namespace AddControls
         internal static ConfigEntry<string> bindsAdded = null!;
         internal static ConfigEntry<string> bindsRemoved = null!;
         internal static ConfigEntry<string> actionNames = null!;
+        internal static ConfigEntry<bool> Reload = null!;
 
         private void Awake()
         {
@@ -24,6 +25,7 @@ namespace AddControls
             bindsAdded = Config.Bind("Binds", "Binds Added", "", "List your custom binds here.\nFormat is ActionName:binding;ActionName2:binding2");
             bindsRemoved = Config.Bind("Binds", "Binds Removed", "", "List default bindings you wish to remove.\nFormat is ActionName:binding;ActionName2:binding2");
             actionNames = Config.Bind("Help", "Possible Action Names", "", "This will list all possible action names separated by a comma.\nEditing this will do nothing!");
+            Reload = Config.Bind("Binds", "Reload Settings", false, "Set this to true if you wish to reload your bind settings!");
 
             actionNames.Value = "";
             InputSystem.actions.Do(a => actionNames.Value += $"{a.name}, ");
@@ -46,21 +48,20 @@ namespace AddControls
             if (settingChangedArg.ChangedSetting == null)
                 return;
 
-            ConfigEntry<string> settingChanged = (ConfigEntry<string>)settingChangedArg.ChangedSetting;
-
-            if (settingChanged == null)
-                return;
-
-            Log.LogDebug($"CONFIG SETTING CHANGE EVENT - {settingChangedArg.ChangedSetting.Definition.Key}");
-            
-            if(settingChanged == bindsAdded)
+            if (settingChangedArg.ChangedSetting.BoxedValue.GetType() == typeof(bool))
             {
-                BindManager.CustomBindings();
-            }
+                ConfigEntry<bool> settingChanged = (ConfigEntry<bool>)settingChangedArg.ChangedSetting;
 
-            if(settingChanged == bindsRemoved)
-            {
-                BindManager.RemoveBindings();
+                if (settingChanged == null)
+                    return;
+
+                Log.LogDebug($"CONFIG SETTING CHANGE EVENT - {settingChangedArg.ChangedSetting.Definition.Key}");
+
+                if (settingChanged == Reload && settingChanged.Value == true)
+                {
+                    BindManager.Start();
+                    settingChanged.Value = false;
+                }
             }
         }
     }

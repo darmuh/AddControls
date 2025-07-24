@@ -104,7 +104,7 @@ namespace AddControls
             }
 
             inputAction.ChangeBindingWithPath(Value).Erase();
-            Log.LogMessage($"Added binding for {Name} with {Value}");
+            Log.LogMessage($"Removed binding for {Name} with {Value}");
         }
 
         //bind removal entry point
@@ -115,13 +115,13 @@ namespace AddControls
             //if (!InputSystem.actions.Any(a => a.name == actionName))
             if (inputAction == null)
             {
-                Log.LogWarning($"Unable to bind {actionName} to {value} (INVALID ACTION)");
+                Log.LogWarning($"Unable to remove bind {actionName} to {value} (INVALID ACTION)");
                 return;
             }
 
             if (!inputAction.bindings.Any( b => b.effectivePath.Contains(value, System.StringComparison.InvariantCultureIgnoreCase)))
             {
-                Log.LogWarning($"Unable to unbind {actionName} from {value}, this is not already bound!");
+                Log.LogWarning($"Unable to remove bind {actionName} from {value}, this is not already bound!");
                 return;
             }
 
