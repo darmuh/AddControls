@@ -1,0 +1,153 @@
+﻿using HarmonyLib;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
+using static AddControls.Misc;
+using static AddControls.Plugin;
+
+namespace AddControls
+{
+    public class BindManager
+    {
+        internal static Dictionary<string, string> customBindings = [];
+        internal static Dictionary<string, string> removeList = [];
+
+        public static void Start()
+        {
+            Log.LogMessage("BindManager Start initialized!");
+            CustomBindings();
+            RemoveBindings();
+            Log.LogMessage("BindManager Start complete!");
+        }
+
+        public static void CustomBindings()
+        {
+            InitCustomBindings();
+            if (customBindings.Count > 0)
+            {
+                customBindings.Do(c => AddBind(c.Key, c.Value));
+            }
+        }
+
+        public static void RemoveBindings()
+        {
+            InitBindsToRemove();
+
+            if (removeList.Count > 0)
+            {
+                removeList.Do(r => RemoveBind(r.Key, r.Value));
+            }
+        }
+
+        private static void InitCustomBindings()
+        {
+            customBindings = [];
+
+            if (string.IsNullOrEmpty(bindsAdded.Value))
+                Log.LogDebug("No custom binds to add!");
+            else
+            {
+                if (bindsAdded.Value.EndsWith(';'))
+                    bindsAdded.Value = bindsAdded.Value.TrimEnd(';');
+
+                customBindings = bindsAdded.Value
+                    .Split(';')
+                   .Select(item => item.Trim())
+                   .Select(item => item.Split(':'))
+                   .ToDictionary(pair => pair[0].Trim(), pair => pair[1].Trim());
+            }
+
+            Log.LogDebug("Custom Bindings list created!");
+        }
+
+        private static void InitBindsToRemove()
+        {
+            removeList = [];
+
+            if (string.IsNullOrEmpty(bindsRemoved.Value))
+                Log.LogDebug("No custom binds to add!");
+            else
+            {
+                if (bindsRemoved.Value.EndsWith(';'))
+                    bindsRemoved.Value = bindsRemoved.Value.TrimEnd(';');
+
+                removeList = bindsRemoved.Value
+                    .Split(';')
+                   .Select(item => item.Trim())
+                   .Select(item => item.Split(':'))
+                   .ToDictionary(pair => pair[0].Trim(), pair => pair[1].Trim());
+            }
+
+            Log.LogDebug("removeList created!");
+        }
+
+        //method used to actually update inputaction after validations
+        private static void AddActionBind(InputAction inputAction, string Name, string Value)
+        {
+            if (inputAction == null)
+            {
+                Log.LogError($"Unable to find inputAction for {Name} @ AddAction!");
+                return;
+            }
+
+            inputAction.AddBinding(Value);
+            Log.LogMessage($"Added binding for {Name} with {Value}");
+        }
+
+        private static void RemoveActionBind(InputAction inputAction, string Name, string Value)
+        {
+            if (inputAction == null)
+            {
+                Log.LogError($"Unable to find inputAction for {Name} @ RemoveAction!");
+                return;
+            }
+
+            inputAction.ChangeBindingWithPath(Value).Erase();
+            Log.LogMessage($"Added binding for {Name} with {Value}");
+        }
+
+        //bind removal entry point
+        public static void RemoveBind(string actionName, string value)
+        {
+            InputAction inputAction = InputSystem.actions.FindAction(actionName);
+
+            //if (!InputSystem.actions.Any(a => a.name == actionName))
+            if (inputAction == null)
+            {
+                Log.LogWarning($"Unable to bind {actionName} to {value} (INVALID ACTION)");
+                return;
+            }
+
+            if (!inputAction.bindings.Any( b => b.effectivePath.Contains(value, System.StringComparison.InvariantCultureIgnoreCase)))
+            {
+                Log.LogWarning($"Unable to unbind {actionName} from {value}, this is not already bound!");
+                return;
+            }
+
+            RemoveActionBind(inputAction, actionName, value);
+        }
+
+        //bind add entry point
+        public static void AddBind(string actionName, string value)
+        {
+            InputAction inputAction = InputSystem.actions.FindAction(actionName);
+
+            //if (!InputSystem.actions.Any(a => a.name == actionName))
+            if(inputAction == null)
+            {
+                Log.LogWarning($"Unable to bind {actionName} to {value} (INVALID ACTION)");
+                return;
+            }
+
+            if (!ValidValues.Contains(value))
+            {
+                Log.LogWarning($"Unable to bind {actionName} to {value} (INVALID VALUE)");
+                return;
+            }
+
+            //InputAction inputAction = InputSystem.actions.FindAction(actionName);
+            AddActionBind(inputAction, actionName, value);
+        }
+    }
+}
