@@ -11,6 +11,7 @@ namespace AddControls
 	public class BindManager
 	{
 		internal static Dictionary<string, string> customBindings = [];
+		internal static Dictionary<string, string> prevCustomBindings = [];
 		internal static Dictionary<string, string> removeList = [];
 
 		public static void Start()
@@ -24,6 +25,11 @@ namespace AddControls
 		public static void CustomBindings()
 		{
 			InitCustomBindings();
+			InitPrevCustomBindings();
+			if (prevCustomBindings.Count > 0)
+			{
+				prevCustomBindings.Do(p => RemoveBind(p.Key, p.Value));
+			}
 			if (customBindings.Count > 0)
 			{
 				customBindings.Do(c => AddBind(c.Key, c.Value));
@@ -59,6 +65,27 @@ namespace AddControls
 			}
 
 			Log.LogDebug("Custom Bindings list created!");
+		}
+
+		private static void InitPrevCustomBindings()
+		{
+			prevCustomBindings = [];
+
+			if (string.IsNullOrEmpty(prevBindsAdded))
+				Log.LogDebug("No previous custom binds to add!");
+			else
+			{
+				if (prevBindsAdded.EndsWith(';'))
+					prevBindsAdded = prevBindsAdded.TrimEnd(';');
+
+				prevCustomBindings = prevBindsAdded
+					.Split(';')
+					.Select(item => item.Trim())
+					.Select(item => item.Split(':'))
+					.ToDictionary(pair => pair[0].Trim(), pair => pair[1].Trim());
+			}
+
+			Log.LogDebug("Previous Custom Bindings list created!");
 		}
 
 		private static void InitBindsToRemove()
