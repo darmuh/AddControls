@@ -1,31 +1,25 @@
 # AddControls
 
-Describe your project here!
+Add and remove bindings of your own! Allows for binding any control to multiple keys.
 
-## Template Instructions
+## Configuration
 
-You can remove this section after you've set up your project.
+### Add Custom Bindings
+- To add custom bindings, you'll want to modify the ``Binds Added`` configuration item.
+- This configuration item is a single text string that will be parsed for your desired input action and keybinding.
+- The format is as follows: ``actionName:keybindingPath;actionName2:keybindingPath2``
+- For example: if you wanted to bind the action, ``Crouch``, to the key, ``C``, and the action, ``Jump``, to the mouse ``Scroll Wheel`` you would do ``Crouch:<Keyboard>/c;Jump:<Mouse>/scroll``
 
-Next steps:
+### Remove Existing Bindings
+- To remove bindings, you'll want to modify the ``Binds Removed`` configuration item.
+- This configuration item is a single text string that will be parsed for your desired input action and keybinding.
+- The format is as follows: ``actionName:keybindingPath;actionName2:keybindingPath2``
+- For example, if you wanted to unbind the action, ``Crouch``, from the key, ``CTRL``, you would do ``Crouch:<Keyboard>/ctrl``
 
-- Create a copy of the `Config.Build.user.props.template` file and name it `Config.Build.user.props`
-  - This will automate copying your plugin assembly to `BepInEx/plugins/`
-  - Configure the paths to point to your game path and your `BepInEx/plugins/`
-  - Game assembly references should work if the path to the game is valid
-- Search `TODO` in the whole project to see what you should configure or modify
+### Action Names and Keybind Paths
+- For a list of acceptable actions please see ``Possible Action Names``.
+- For a list of acceptable keybinding paths see [KeyBindValues.txt from Peak-Unbound](https://github.com/glarmer/PEAK-Unbound/blob/main/KeyBindValues.txt)
+- NOTE: There is no limit to how many binds you can add or remove. Just continue to follow the correct formatting for each new action/keybind.
 
-### Thunderstore Packaging
-
-This template comes with Thunderstore packaging built-in, using [TCLI](<https://github.com/thunderstore-io/thunderstore-cli>).
-
-You can build Thunderstore packages by running:
-
-```sh
-dotnet build -c Release -target:PackTS -v d
-```
-
-> [!NOTE]  
-> You can learn about different build options with `dotnet build --help`.  
-> `-c` is short for `--configuration` and `-v d` is `--verbosity detailed`.
-
-The built package will be found at `artifacts/thunderstore/`.
+### Making changes in-game
+- If you would like to reload your config items to add/remove bindings and have [ModConfig](https://thunderstore.io/c/peak/p/PEAKModding/ModConfig/) installed, simply change the configuration item labeled ``Reload Settings`` to a different value. 

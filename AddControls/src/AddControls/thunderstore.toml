@@ -5,10 +5,10 @@ schemaVersion = "0.0.1"
 repository = "https://thunderstore.io"
 
 [package]
-namespace = "TODO: Fill in your Thunderstore team name here"
+namespace = "darmuh"
 name = "AddControls"
-description = "TODO: Fill in short mod description."
-websiteUrl = "" # TODO: Add a link to your mod repository here (optional)
+description = "Add custom controls, remove existing controls, etc."
+websiteUrl = "https://github.com/darmuh/AddControls" # TODO: Add a link to your mod repository here (optional)
 containsNsfwContent = false
 
 [package.dependencies]

@@ -10,23 +10,30 @@ namespace AddControls
     [BepInAutoPlugin]
     public partial class Plugin : BaseUnityPlugin
     {
+        internal static Plugin Instance { get; private set; } = null!;
         internal static ManualLogSource Log { get; private set; } = null!;
         internal static ConfigEntry<string> bindsAdded = null!;
         internal static ConfigEntry<string> bindsRemoved = null!;
         internal static ConfigEntry<string> actionNames = null!;
-        internal static ConfigEntry<bool> Reload = null!;
+        internal static ConfigEntry<Options> Reload = null!;
 
-        private void Awake()
+        internal enum Options
         {
-            Log = Logger;
+            Reload,
+            ReloadNow
+        }
 
+        private void Start()
+        {
+            Instance = this;
+            Log = Logger;
             Log.LogInfo($"Plugin {Name} is loaded!");
 
             bindsAdded = Config.Bind("Binds", "Binds Added", "", "List your custom binds here.\nFormat is ActionName:binding;ActionName2:binding2");
             bindsRemoved = Config.Bind("Binds", "Binds Removed", "", "List default bindings you wish to remove.\nFormat is ActionName:binding;ActionName2:binding2");
+            Reload = Config.Bind<Options>("Binds", "Reload Settings", Options.Reload, "Change this setting in-game if you wish to reload your bind settings!");
+            Reload.Value = Options.Reload;
             actionNames = Config.Bind("Help", "Possible Action Names", "", "This will list all possible action names separated by a comma.\nEditing this will do nothing!");
-            Reload = Config.Bind("Binds", "Reload Settings", false, "Set this to true if you wish to reload your bind settings!");
-
             actionNames.Value = "";
             InputSystem.actions.Do(a => actionNames.Value += $"{a.name}, ");
 
@@ -34,7 +41,6 @@ namespace AddControls
 
             Config.SettingChanged += OnSettingChanged;
             Config.ConfigReloaded += OnConfigReloaded;
-
         }
 
         private void OnConfigReloaded(object sender, EventArgs e)
@@ -48,19 +54,18 @@ namespace AddControls
             if (settingChangedArg.ChangedSetting == null)
                 return;
 
-            if (settingChangedArg.ChangedSetting.BoxedValue.GetType() == typeof(bool))
+            if (settingChangedArg.ChangedSetting.BoxedValue.GetType() == typeof(Options))
             {
-                ConfigEntry<bool> settingChanged = (ConfigEntry<bool>)settingChangedArg.ChangedSetting;
+                ConfigEntry<Options> settingChanged = (ConfigEntry<Options>)settingChangedArg.ChangedSetting;
 
                 if (settingChanged == null)
                     return;
 
                 Log.LogDebug($"CONFIG SETTING CHANGE EVENT - {settingChangedArg.ChangedSetting.Definition.Key}");
 
-                if (settingChanged == Reload && settingChanged.Value == true)
+                if (settingChanged == Reload)
                 {
                     BindManager.Start();
-                    settingChanged.Value = false;
                 }
             }
         }
