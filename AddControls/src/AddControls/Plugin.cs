@@ -16,6 +16,7 @@ namespace AddControls
 		internal static ConfigEntry<string> bindsRemoved = null!;
 		internal static ConfigEntry<string> actionNames = null!;
 		internal static ConfigEntry<Options> Reload = null!;
+		internal static  string prevBindsAdded = null!;
 
 		internal enum Options
 		{
@@ -40,6 +41,7 @@ namespace AddControls
 
 			BindManager.Start();
 
+			prevBindsAdded = bindsAdded.Value;
 			Config.SettingChanged += OnSettingChanged;
 			Config.ConfigReloaded += OnConfigReloaded;
 		}
