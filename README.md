@@ -22,4 +22,4 @@ Add and remove bindings of your own! Allows for binding any control to multiple 
 - NOTE: There is no limit to how many binds you can add or remove. Just continue to follow the correct formatting for each new action/keybind.
 
 ### Making changes in-game
-- If you would like to reload your config items to add/remove bindings and have [ModConfig](https://thunderstore.io/c/peak/p/PEAKModding/ModConfig/) installed, simply change the configuration item labeled ``Reload Settings`` to a different value. 
+- Reloading your config bindings with [ModConfig](https://thunderstore.io/c/peak/p/PEAKModding/ModConfig/) installed will be done automatically each time you finish editing the ``Binds Added`` and/or ``Binds Removed`` configuration item(s).
