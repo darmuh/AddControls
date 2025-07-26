@@ -15,13 +15,6 @@ namespace AddControls
 		internal static ConfigEntry<string> bindsAdded = null!;
 		internal static ConfigEntry<string> bindsRemoved = null!;
 		internal static ConfigEntry<string> actionNames = null!;
-		internal static ConfigEntry<Options> Reload = null!;
-
-		internal enum Options
-		{
-			Reload,
-			ReloadNow
-		}
 
 		private void Start()
 		{
