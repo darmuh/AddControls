@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using pworld.Scripts.Extensions;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine.InputSystem;
@@ -13,36 +14,39 @@ namespace AddControls
 		internal static Dictionary<string, string> customBindings = [];
 		internal static Dictionary<string, string> prevCustomBindings = [];
 		internal static Dictionary<string, string> removeList = [];
+		internal static Dictionary<string, string> prevRemoveList = [];
 
 		public static void Start()
 		{
 			Log.LogMessage("BindManager Start initialized!");
-			CustomBindings();
 			RemoveBindings();
+			CustomBindings();
 			Log.LogMessage("BindManager Start complete!");
 		}
 
 		public static void CustomBindings()
 		{
-			InitCustomBindings();
 			InitPrevCustomBindings();
+			InitCustomBindings();
+			
 			if (prevCustomBindings.Count > 0)
-			{
-				prevCustomBindings.Do(p => RemoveBind(p.Key, p.Value));
-			}
+				prevCustomBindings.Do(bind => RemoveBind(bind.Key, bind.Value));
 			if (customBindings.Count > 0)
-			{
-				customBindings.Do(c => AddBind(c.Key, c.Value));
-			}
+				customBindings.Do(bind => AddBind(bind.Key, bind.Value));
 		}
 
 		public static void RemoveBindings()
 		{
+			InitPrevBindsToRemove();
 			InitBindsToRemove();
-
+			
+			if (prevRemoveList.Count > 0)
+			{
+				prevRemoveList.Do(bind => AddBind(bind.Key, bind.Value));
+			}
 			if (removeList.Count > 0)
 			{
-				removeList.Do(r => RemoveBind(r.Key, r.Value));
+				removeList.Do(bind => RemoveBind(bind.Key, bind.Value));
 			}
 		}
 
@@ -64,26 +68,15 @@ namespace AddControls
 					.ToDictionary(pair => pair[0].Trim(), pair => pair[1].Trim());
 			}
 
+			InitBindingsValidation();
+
 			Log.LogDebug("Custom Bindings list created!");
 		}
 
 		private static void InitPrevCustomBindings()
 		{
 			prevCustomBindings = [];
-
-			if (string.IsNullOrEmpty(prevBindsAdded))
-				Log.LogDebug("No previous custom binds to add!");
-			else
-			{
-				if (prevBindsAdded.EndsWith(';'))
-					prevBindsAdded = prevBindsAdded.TrimEnd(';');
-
-				prevCustomBindings = prevBindsAdded
-					.Split(';')
-					.Select(item => item.Trim())
-					.Select(item => item.Split(':'))
-					.ToDictionary(pair => pair[0].Trim(), pair => pair[1].Trim());
-			}
+			prevCustomBindings = customBindings.ToDictionary(bind => bind.Key, bind => bind.Value);
 
 			Log.LogDebug("Previous Custom Bindings list created!");
 		}
@@ -106,7 +99,27 @@ namespace AddControls
 					.ToDictionary(pair => pair[0].Trim(), pair => pair[1].Trim());
 			}
 
+			InitBindingsValidation();
+
 			Log.LogDebug("removeList created!");
+		}
+
+		private static void InitPrevBindsToRemove()
+		{
+			prevRemoveList = [];
+			prevRemoveList = removeList.ToDictionary(bind => bind.Key, bind => bind.Value);
+
+			Log.LogDebug("prevRemoveList created!");
+		}
+
+		public static void InitBindingsValidation()
+		{
+			if (customBindings.Count == 0 || removeList.Count == 0)
+				Log.LogDebug("No custom binds or removed binds to compare against!");
+			else
+				removeList.DoIf(bind => customBindings.Contains(bind), bind => customBindings.Remove(bind.Key));
+
+			Log.LogDebug("Custom Bindings list & removeList validated!");
 		}
 
 		//method used to actually update inputaction after validations
@@ -146,7 +159,7 @@ namespace AddControls
 				return;
 			}
 
-			if (!inputAction.bindings.Any( b => b.effectivePath.Contains(value, System.StringComparison.InvariantCultureIgnoreCase)))
+			if (!inputAction.bindings.Any(b => b.effectivePath.Contains(value, System.StringComparison.InvariantCultureIgnoreCase)))
 			{
 				Log.LogWarning($"Unable to remove bind {actionName} from {value}, this is not already bound!");
 				return;
