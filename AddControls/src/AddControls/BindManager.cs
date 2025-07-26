@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine.InputSystem;
 using static AddControls.Misc;
 using static AddControls.Plugin;
-using static UnityEngine.Rendering.DebugUI;
 
 namespace AddControls
 {
