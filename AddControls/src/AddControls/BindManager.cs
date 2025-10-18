@@ -18,6 +18,7 @@ public class BindManager
         BindIndex = bindingIndex;
         Setting = config;
         InputActionConfigs.Add(this);
+        UpdateActionBinding();
     }
 
     public static bool TryGetFromConfig(ConfigEntry<string> config, out BindManager result)

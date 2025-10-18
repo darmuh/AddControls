@@ -1,5 +1,8 @@
 # Changelog
 
+### 0.2.1
+- forgot a line to actually make the changes to generative controls, added now :)
+
 ### 0.2.0
 - Reworked mod to be better applied to all Unity games that utilize the InputAction binding system.
 - Updated readme for current version, removed references to PEAK.
