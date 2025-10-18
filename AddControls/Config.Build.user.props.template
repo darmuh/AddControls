@@ -5,6 +5,9 @@
     <!-- <PeakGameRootDir></PeakGameRootDir> -->
     <!-- Set if your BepInEx/plugins/ directory isn't in the game files. -->
     <!-- <PeakPluginsDir></PeakPluginsDir> -->
+	<!-- <TS_API_TOKEN></TS_API_TOKEN>-->
+	<!-- This is your private thunderstore publishing token, do not share with others. 
+	Will allow for publishing directly to thunderstore from command line -->
   </PropertyGroup>
 
   <Target Name="DeployFiles" AfterTargets="Build">

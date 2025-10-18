@@ -1,4 +1,8 @@
 <Project>
+  <!--
+    This is a special file that contains shared configuration
+    for all project files in subdirectories.
+  -->
 
   <!-- Set extra NuGet sources -->
   <PropertyGroup>
@@ -18,19 +22,9 @@
 
   <!-- NuGet fallback stripped game references -->
   <ItemGroup Condition="!Exists('$(ManagedDir)')">
-    <PackageReference Include="UnityEngine.Modules" Version="6000.0.36" PrivateAssets="all" />
+	<PackageReference Include="UnityEngine.Modules" Version="6000.0.36" PrivateAssets="all" />
   </ItemGroup>
-
-  <!-- Local game references -->
-  <ItemGroup Condition="Exists('$(ManagedDir)')">
-    <LocalReferences
-      Include="$(ManagedDir)*.dll"
-      Exclude="$(ManagedDir)Mono*.dll;$(ManagedDir)netstandard.dll;$(ManagedDir)System*.dll;$(ManagedDir)mscorlib.dll"
-    />
-    <Reference Include="@(LocalReferences)" Private="false" />
-    <Reference Include="$(ManagedDir)Assembly-CSharp.dll" Private="false" Publicize="true" />
-  </ItemGroup>
-
+	
   <!--
     Build Thunderstore package by calling `dotnet build -c Release -target:PackTS -v d` (verbosity detailed).
     Publish to Thunderstore by including `-property:PublishTS=true` in the command.
